@@ -139,7 +139,7 @@ const custodia = [
 		<div id="view-viaje" class="tx-view active">
 			<div style="background:#0b0c0f;color:#f2f1ed;font-family:'Space Grotesk',sans-serif;position:relative;">
 				<section
-					style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:80px 24px 40px;position:relative;background-image:linear-gradient(rgba(242,241,237,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(242,241,237,.025) 1px, transparent 1px);background-size:64px 64px;"
+					style="min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:80px 24px 40px;position:relative;background-image:linear-gradient(rgba(242,241,237,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(242,241,237,.025) 1px, transparent 1px);background-size:64px 64px;"
 				>
 					<div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.3em;color:#8b8f9c;">
 						SIMULACIÓN INTERACTIVA · RED BITCOIN
@@ -210,7 +210,7 @@ const custodia = [
 				<div id="tx-sim" style="height:960vh;position:relative;">
 					<div
 						id="tx-sticky"
-						style="position:sticky;top:0;height:100vh;overflow:hidden;background-image:linear-gradient(rgba(242,241,237,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(242,241,237,.02) 1px, transparent 1px);background-size:64px 64px;"
+						style="position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;background-image:linear-gradient(rgba(242,241,237,.02) 1px, transparent 1px),linear-gradient(90deg, rgba(242,241,237,.02) 1px, transparent 1px);background-size:64px 64px;"
 					>
 						<canvas id="tx-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
 						<div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(5,6,8,.55) 100%);">
@@ -251,7 +251,10 @@ const custodia = [
 							</button>
 						</div>
 						<div style="position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;pointer-events:none;">
-							<div style="position:relative;width:min(560px,86vw);height:118px;background:rgba(11,12,15,.55);backdrop-filter:blur(8px);border:1px solid rgba(242,241,237,.06);border-radius:6px;padding:8px 0;">
+							<div
+								class="tx-caption-box"
+								style="position:relative;width:min(560px,86vw);height:118px;background:rgba(11,12,15,.55);backdrop-filter:blur(8px);border:1px solid rgba(242,241,237,.06);border-radius:6px;padding:8px 0;"
+							>
 								<div data-stage="0" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 									<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 01 / 06 — FIRMA</div>
 									<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">La wallet firma digitalmente la transacción para demostrar que puede gastar esos fondos.</p>
@@ -302,7 +305,7 @@ const custodia = [
 						}
 					</div>
 				</section>
-				<section style="min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:60px 24px;border-top:1px solid rgba(242,241,237,.08);">
+				<section style="min-height:60vh;min-height:60dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:60px 24px;border-top:1px solid rgba(242,241,237,.08);">
 					<div style="width:44px;height:44px;border-radius:50%;border:1.5px solid #3ddc84;display:flex;align-items:center;justify-content:center;color:#3ddc84;font-size:20px;box-shadow:0 0 24px rgba(61,220,132,.25);">
 						✓
 					</div>
@@ -612,6 +615,13 @@ const custodia = [
 	.tx-nav-tabs {
 		display: flex;
 		gap: 8px;
+		min-width: 0;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.tx-nav-tabs::-webkit-scrollbar {
+		display: none;
 	}
 	.tx-tab {
 		font-family: 'JetBrains Mono', monospace;
@@ -624,6 +634,8 @@ const custodia = [
 		color: #8b8f9c;
 		font-weight: 400;
 		transition: all 0.2s;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 	.tx-tab.active {
 		border-color: rgba(247, 147, 26, 0.6);
@@ -743,6 +755,7 @@ const custodia = [
 	.tx-exp-hero,
 	.tx-fund-hero {
 		min-height: 100vh;
+		min-height: 100dvh;
 		padding: 110px 24px 90px;
 		display: flex;
 		flex-direction: column;
@@ -1407,5 +1420,44 @@ const custodia = [
 		border-color: rgba(255, 107, 107, 0.4);
 		background: rgba(255, 107, 107, 0.06);
 		color: #ff9b9b;
+	}
+
+	/* ---------- mobile fit (same design, adapted layout) ---------- */
+
+	@media (max-width: 480px) {
+		.tx-nav {
+			padding: 12px 14px;
+			gap: 10px;
+		}
+		.tx-nav-brand {
+			font-size: 11px;
+			gap: 8px;
+			flex-shrink: 0;
+		}
+		.tx-tab {
+			font-size: 10px;
+			letter-spacing: 0.1em;
+			padding: 8px 12px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.tx-panel-grid {
+			grid-template-columns: 1fr;
+		}
+		.tx-col-right {
+			border-left: none;
+			border-top: 1px solid rgba(242, 241, 237, 0.06);
+		}
+		.tx-col-arrow {
+			padding: 8px 0;
+			transform: rotate(90deg);
+		}
+	}
+
+	@media (max-width: 480px) {
+		.tx-caption-box {
+			height: 150px !important;
+		}
 	}
 </style>
