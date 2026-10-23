@@ -1,0 +1,102 @@
+---
+import { DEFAULT_TX_ID, TXS, HEURISTICAS } from '../data/txExplorerData';
+import Mision from './Mision.astro';
+
+const initialTx = TXS[DEFAULT_TX_ID];
+---
+
+<div id="view-explorador" class="tx-view">
+	<section class="tx-exp-hero">
+		<div class="tx-exp-heading">
+			<div class="tx-eyebrow">RASTREADOR // BLOCK EXPLORER</div>
+			<h2 class="tx-h2">Sigue el rastro del dinero</h2>
+			<p class="tx-lede">
+				Así trabaja un analista: cada output gastado apunta a la siguiente transacción. Sigue los saltos desde la TX de Alice
+				hasta el destino final.
+			</p>
+		</div>
+		<div class="tx-search-row">
+			<input id="tx-search-input" class="tx-search-input" placeholder="Pega un TXID… (prueba 4b3f)" />
+			<button id="tx-search-btn" class="tx-search-btn">BUSCAR</button>
+		</div>
+		<div id="tx-notfound" class="tx-notfound" hidden>✕ TXID no encontrado en este dataset de práctica</div>
+		<div class="tx-trail">
+			<span class="tx-trail-label">RUTA:</span>
+			<span id="tx-trail-items"
+				><button class="tx-trail-btn current" data-jump={DEFAULT_TX_ID}>{DEFAULT_TX_ID}</button></span
+			>
+		</div>
+		<div id="tx-panel" class="tx-panel">
+			<div class="tx-panel-head">
+				<div class="tx-panel-id">
+					<span class="tx-label">TXID</span>
+					<span class="tx-id-val">{initialTx.id}</span>
+				</div>
+				<div class="tx-panel-meta">
+					<div class="tx-meta-item"><span class="tx-label">BLOQUE</span><span class="tx-meta-val">{initialTx.block}</span></div>
+					<div class="tx-meta-item">
+						<span class="tx-label">CONFIRMACIONES</span><span class="tx-meta-val tx-conf">{initialTx.conf}</span>
+					</div>
+					<div class="tx-meta-item"><span class="tx-label">FEE</span><span class="tx-meta-val">{initialTx.fee}</span></div>
+				</div>
+			</div>
+			<div class="tx-panel-grid">
+				<div class="tx-col">
+					<span class="tx-col-label tx-col-in">INPUTS · DE DÓNDE VIENE</span>
+					{
+						initialTx.inputs.map((inp) => (
+							<div class="tx-row tx-row-in">
+								<span class="tx-row-addr">{inp.addr}</span>
+								<span class="tx-row-val">{inp.val}</span>
+							</div>
+						))
+					}
+				</div>
+				<div class="tx-col-arrow">→</div>
+				<div class="tx-col tx-col-right">
+					<span class="tx-col-label tx-col-out">OUTPUTS · A DÓNDE VA</span>
+					{
+						initialTx.outputs.map((out) => (
+							<div class={`tx-row tx-row-out${out.next ? ' tx-row-next' : ''}`}>
+								<div class="tx-row-left">
+									<span class="tx-row-addr">{out.addr}</span>
+									<span class={`tx-row-tag${out.next ? ' tx-row-tag-next' : ''}`}>{out.tag}</span>
+								</div>
+								<div class="tx-row-right">
+									<span class="tx-row-val">{out.val}</span>
+									{out.next && (
+										<button class="tx-follow-btn" data-follow={out.next}>
+											SEGUIR →
+										</button>
+									)}
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</div>
+			<div class="tx-note"><span class="tx-note-label">ANALISTA:</span> {initialTx.nota}</div>
+		</div>
+		<div class="heur-wrap">
+			<div class="heur-heading">
+				<div class="heur-caption">HEURÍSTICAS DE CLUSTERING · TU CHULETA</div>
+				<p class="heur-sub">Las cuatro técnicas con las que un analista agrupa direcciones bajo una misma entidad.</p>
+			</div>
+			<div class="heur-grid">
+				{
+					HEURISTICAS.map((h) => (
+						<div class="heur-card">
+							<div class="heur-head">
+								<span class="heur-name">{h.name}</span>
+								<span class="heur-conf">{h.conf}</span>
+							</div>
+							<span class="heur-desc">{h.desc}</span>
+							<span class="heur-example"><span class="heur-example-label">EJEMPLO AQUÍ:</span> {h.ej}</span>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+	<Mision />
+</div>

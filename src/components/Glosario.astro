@@ -1,0 +1,59 @@
+---
+const glosario = [
+	{
+		term: 'TXID',
+		def: 'La huella digital única de tu transacción (4b3f…a2d1). Es el número que pegarás en un explorador de bloques para rastrearla.',
+	},
+	{
+		term: 'HASH',
+		def: 'Un resumen criptográfico: cualquier dato entra, sale una cadena única de longitud fija. Si cambia un solo bit, el hash cambia por completo.',
+	},
+	{
+		term: 'UTXO',
+		def: 'Bitcoin no tiene "saldos": tiene salidas sin gastar. Tu wallet junta UTXOs como billetes para pagar, y el cambio vuelve como un UTXO nuevo.',
+	},
+	{
+		term: 'MEMPOOL',
+		def: 'La sala de espera de cada nodo. Las transacciones válidas esperan aquí hasta que un minero las incluye en un bloque.',
+	},
+	{
+		term: 'FEE (SAT/VB)',
+		def: 'La comisión por byte virtual. No pagas por monto sino por tamaño: a mayor fee, más arriba en la cola del minero.',
+	},
+	{
+		term: 'NONCE',
+		def: 'El número que el minero cambia millones de veces por segundo hasta que el hash del bloque cumple la dificultad. Es la "prueba" del trabajo.',
+	},
+	{
+		term: 'CONFIRMACIÓN',
+		def: 'Cada bloque minado encima del tuyo. Con 1 estás incluido; con 6, revertirte costaría rehacer el trabajo de toda la red.',
+	},
+	{
+		term: 'DIRECCIÓN',
+		def: 'El destino público (bc1q…) derivado de una clave. Cualquiera puede ver sus movimientos on-chain — por eso las transacciones son rastreables.',
+	},
+];
+---
+
+<section style="padding:90px 24px 100px;border-top:1px solid rgba(242,241,237,.08);display:flex;flex-direction:column;align-items:center;gap:36px;">
+	<div style="display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;">
+		<div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3em;color:#f7931a;">GLOSARIO</div>
+		<h2 style="margin:0;font-size:clamp(26px,3.4vw,38px);font-weight:700;">Las piezas del rompecabezas</h2>
+		<p style="margin:0;color:#8b8f9c;font-size:16px;max-width:520px;line-height:1.5;">
+			Toca cada término. Son los mismos campos que verás al rastrear una transacción en un explorador de bloques.
+		</p>
+	</div>
+	<div class="gloss-grid">
+		{
+			glosario.map((g) => (
+				<button class="gloss-card">
+					<span class="gloss-head">
+						<span class="gloss-term">{g.term}</span>
+						<span class="gloss-chev">＋</span>
+					</span>
+					<span class="gloss-def">{g.def}</span>
+				</button>
+			))
+		}
+	</div>
+</section>

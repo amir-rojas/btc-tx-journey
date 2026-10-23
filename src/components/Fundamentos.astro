@@ -1,0 +1,151 @@
+---
+const deriv = [
+	{
+		num: '01',
+		name: 'FRASE SEMILLA',
+		sample: 'ábaco · nube · tigre · … (12/24)',
+		desc: 'Copia humana de la entropía maestra. Quien la tiene, tiene todo. Nunca viaja por la red.',
+		arrow: true,
+		arrowLbl: 'BIP-32',
+	},
+	{
+		num: '02',
+		name: 'CLAVE PRIVADA',
+		sample: 'K x F 2 … (secreto, 256 bits)',
+		desc: 'El número secreto que firma transacciones. Se derivan miles desde una sola seed.',
+		arrow: true,
+		arrowLbl: 'ECDSA',
+	},
+	{
+		num: '03',
+		name: 'CLAVE PÚBLICA',
+		sample: '02 a1 b2 … (compartible)',
+		desc: 'Se calcula desde la privada. Sirve para verificar firmas sin revelar el secreto.',
+		arrow: true,
+		arrowLbl: 'HASH160',
+	},
+	{
+		num: '04',
+		name: 'DIRECCIÓN',
+		sample: 'bc1qxy…w0en3',
+		desc: 'Hash de la clave pública, codificado. Es lo único que ves on-chain — tu materia prima como analista.',
+		arrow: false,
+		arrowLbl: '',
+	},
+];
+
+const addrTypes = [
+	{ prefix: '1…', name: 'LEGACY · P2PKH', desc: 'El formato original: paga al hash de una clave pública. Fees más altas; común en monedas antiguas.' },
+	{ prefix: '3…', name: 'P2SH', desc: 'Paga a un script: multisig, wrapped SegWit. Típico de exchanges y servicios con firmas múltiples.' },
+	{ prefix: 'bc1q…', name: 'SEGWIT · P2WPKH', desc: 'Formato moderno y barato. El estándar actual de la mayoría de wallets personales.' },
+	{ prefix: 'bc1p…', name: 'TAPROOT · P2TR', desc: 'El más reciente: mayor privacidad, los scripts complejos parecen pagos normales. Más difícil de analizar.' },
+];
+
+const custodia = [
+	{
+		name: 'CUSTODIAL · HOT',
+		badge: 'EXCHANGE',
+		desc: 'Un tercero (Binance, Coinbase) guarda las claves conectadas a internet para operar rápido.',
+		rastreo: 'El mejor punto de apoyo: hay KYC. Una citación al exchange revela la identidad.',
+		hot: true,
+	},
+	{
+		name: 'CUSTODIAL · COLD',
+		badge: 'RESERVAS',
+		desc: 'El tercero guarda la mayoría de fondos offline: las cold wallets de consolidación que viste en el rastreador.',
+		rastreo: 'Direcciones grandes y reutilizadas; los clusters de exchange están etiquetados públicamente.',
+		hot: false,
+	},
+	{
+		name: 'SELF-CUSTODY · HOT',
+		badge: 'APP MÓVIL',
+		desc: 'El usuario controla su seed en una wallet de software conectada (móvil o extensión).',
+		rastreo: 'Sin KYC directo. Se analiza por heurísticas: co-gasto, cambio, patrones de horario.',
+		hot: true,
+	},
+	{
+		name: 'SELF-CUSTODY · COLD',
+		badge: 'HARDWARE',
+		desc: 'Claves en un dispositivo offline (Ledger, Trezor) o papel. Máxima seguridad, mínima huella.',
+		rastreo: 'El caso duro: si nunca toca un exchange, el rastro on-chain es todo lo que tendrás.',
+		hot: false,
+	},
+];
+---
+
+<div id="view-fund" class="tx-view">
+	<section class="tx-fund-hero">
+		<div class="tx-eyebrow">FUNDAMENTOS // CLAVES Y WALLETS</div>
+		<h2 class="tx-h2">Antes de la transacción: la wallet</h2>
+		<p class="tx-lede tx-lede-wide">
+			Una wallet no guarda bitcoins — guarda claves. Entender cómo se derivan y quién las controla te dice qué puedes rastrear y
+			qué no.
+		</p>
+	</section>
+	<section class="tx-fund-section">
+		<div class="tx-fund-caption">LA CADENA DE DERIVACIÓN · SOLO FUNCIONA EN UNA DIRECCIÓN</div>
+		<div class="fund-deriv-row">
+			{
+				deriv.map((d) => (
+					<div class="fund-deriv-item">
+						<div class="fund-deriv-card">
+							<span class="fund-deriv-num">
+								{d.num} · {d.name}
+							</span>
+							<span class="fund-deriv-sample">{d.sample}</span>
+							<span class="fund-deriv-desc">{d.desc}</span>
+						</div>
+						{d.arrow && (
+							<div class="fund-arrow">
+								<span class="fund-arrow-glyph">→</span>
+								<span class="fund-arrow-label">{d.arrowLbl}</span>
+							</div>
+						)}
+					</div>
+				))
+			}
+		</div>
+		<div class="tx-fund-note">
+			<span class="fund-ok">✓</span> De la seed se deriva todo. <span class="fund-no">✕</span> De una dirección es imposible volver
+			a la clave privada — por eso puedes publicar direcciones sin riesgo.
+		</div>
+	</section>
+	<section class="tx-fund-section tx-fund-section-bordered">
+		<div class="tx-fund-caption">TIPOS DE DIRECCIÓN · EL PREFIJO ES UNA PISTA</div>
+		<div class="fund-addr-grid">
+			{
+				addrTypes.map((a) => (
+					<div class="fund-addr-card">
+						<span class="fund-addr-prefix">{a.prefix}</span>
+						<span class="fund-addr-name">{a.name}</span>
+						<span class="fund-addr-desc">{a.desc}</span>
+					</div>
+				))
+			}
+		</div>
+		<div class="tx-fund-note">
+			<span class="fund-hl">ANALISTA:</span> en el rastreador viste las tres: 1A1zP1… (Alice, legacy), 3FZbgi… (exchange, P2SH) y
+			bc1q… (Bob, SegWit).
+		</div>
+	</section>
+	<section class="tx-fund-section tx-fund-section-bordered">
+		<div class="tx-fund-caption">¿QUIÉN CONTROLA LAS CLAVES? · MATRIZ DE CUSTODIA</div>
+		<div class="fund-custody-grid">
+			{
+				custodia.map((c) => (
+					<div class={`fund-custody-card${c.hot ? ' hot' : ' cold'}`}>
+						<div class="fund-custody-head">
+							<span class="fund-custody-name">{c.name}</span>
+							<span class="fund-custody-badge">{c.badge}</span>
+						</div>
+						<span class="fund-custody-desc">{c.desc}</span>
+						<span class="fund-custody-rastreo">
+							<span class="fund-hl">RASTREO:</span> {c.rastreo}
+						</span>
+					</div>
+				))
+			}
+		</div>
+		<button class="tx-btn-primary fund-cta" data-goto-view="explorador">PRACTICAR EN EL RASTREADOR →</button>
+	</section>
+</div>
