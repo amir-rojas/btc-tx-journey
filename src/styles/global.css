@@ -218,6 +218,32 @@
 			animation: tx-view-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 		}
 	}
+	/* network switch: a bigger context change, so it animates on every screen size —
+	   the incoming content fades up from a slight blur while the accents recolour */
+	@keyframes tx-net-in {
+		from {
+			opacity: 0;
+			transform: translateY(18px);
+			filter: blur(6px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+			filter: none;
+		}
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.tx-net-enter {
+			animation: tx-net-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+		}
+		.tx-nav-dot,
+		.tx-tab,
+		.tx-bbar-tab,
+		.tx-bbar-tab::before {
+			transition-property: color, background, background-color, border-color, box-shadow, transform;
+			transition-duration: 0.35s;
+		}
+	}
 
 	/* network switch: elements tagged data-net-only="btc|eth" show for that net only */
 	html[data-net='eth'] [data-net-only='btc'],

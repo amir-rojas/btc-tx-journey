@@ -45,6 +45,15 @@ function setNet(n: Net): void {
 	netListeners.forEach((fn) => fn(n));
 }
 
+/** (Re)start a one-shot CSS animation class on `el`, removing it once it ends. */
+function replayAnim(el: HTMLElement | null, cls: string): void {
+	if (!el) return;
+	el.classList.remove(cls);
+	void el.offsetWidth; // force a reflow so the animation restarts
+	el.classList.add(cls);
+	el.addEventListener('animationend', () => el.classList.remove(cls), { once: true });
+}
+
 export function initChrome(): void {
 	const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-tab]')];
 	const viewEls: Record<View, HTMLElement | null> = {
@@ -60,13 +69,7 @@ export function initChrome(): void {
 		current = v;
 		VIEWS.forEach((key) => viewEls[key]?.classList.toggle('active', key === v));
 		// replay the entry animation on the incoming view (CSS decides where it runs)
-		const el = viewEls[v];
-		if (changed && el) {
-			el.classList.remove('tx-view-enter');
-			void el.offsetWidth; // restart the animation
-			el.classList.add('tx-view-enter');
-			el.addEventListener('animationend', () => el.classList.remove('tx-view-enter'), { once: true });
-		}
+		if (changed) replayAnim(viewEls[v], 'tx-view-enter');
 		tabs.forEach((b) => b.classList.toggle('active', b.dataset.tab === v));
 		// the tab strip scrolls sideways on narrow phones: keep the active tab in view
 		const activeTab = tabs.find((b) => b.dataset.tab === v);
@@ -93,6 +96,8 @@ export function initChrome(): void {
 		syncNetToggle(n);
 		// land on a view that exists on this net
 		setView(VIEW_NETS[current].includes(n) ? current : 'viaje');
+		// whatever the new net shows (eth: its placeholder) fades in
+		replayAnim(n === 'eth' ? document.getElementById('view-eth') : viewEls[current], 'tx-net-enter');
 	});
 	syncNetToggle(net);
 
