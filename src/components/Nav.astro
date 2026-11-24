@@ -21,3 +21,20 @@
 		</div>
 	</div>
 </nav>
+
+<!-- phones only: the same tabs as a thumb-reachable bottom bar (CSS hides the top strip there).
+     Kept outside .tx-nav because its backdrop-filter would trap position:fixed children. -->
+<nav class="tx-bbar" aria-label="Secciones">
+	<button class="tx-bbar-tab active" data-tab="viaje">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18 L10 12 L14 15 L20 6" /><path d="M15 6 H20 V11" /></svg>
+		<span>EL VIAJE</span>
+	</button>
+	<button class="tx-bbar-tab" data-tab="explorador">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" /><path d="M15 15 L20 20" /></svg>
+		<span>RASTREAR</span>
+	</button>
+	<button class="tx-bbar-tab" data-tab="fund">
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 L20 8 L12 12 L4 8 Z" /><path d="M4 12 L12 16 L20 12" /><path d="M4 16 L12 20 L20 16" /></svg>
+		<span>FUNDAMENTOS</span>
+	</button>
+</nav>

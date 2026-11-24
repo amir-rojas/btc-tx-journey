@@ -16,11 +16,32 @@ const initialTx = TXS[DEFAULT_TX_ID];
 				inspeccionarlo, y sigue los saltos desde la TX de Alice hasta el destino final.
 			</p>
 		</div>
-		<div class="tx-search-row">
-			<input id="tx-search-input" class="tx-search-input" placeholder="Pega un TXID… (prueba 4b3f)" />
-			<button id="tx-search-btn" class="tx-search-btn">BUSCAR</button>
+		<form id="tx-search" class="tx-search-row" role="search">
+			<input
+				id="tx-search-input"
+				class="tx-search-input"
+				type="search"
+				autocomplete="off"
+				autocapitalize="off"
+				spellcheck="false"
+				enterkeyhint="search"
+				aria-label="Buscar TXID"
+				aria-describedby="tx-search-msg"
+				placeholder="Busca un TXID · ej. 9e12"
+			/>
+			<button type="submit" class="tx-search-btn">BUSCAR</button>
+		</form>
+		<div class="tx-search-samples">
+			<span class="tx-search-samples-label">TXS DE PRÁCTICA</span>
+			{
+				Object.keys(TXS).map((id) => (
+					<button type="button" class="tx-sample" data-sample={id}>
+						{id}
+					</button>
+				))
+			}
 		</div>
-		<div id="tx-notfound" class="tx-notfound" hidden>✕ TXID no encontrado en este dataset de práctica</div>
+		<div id="tx-search-msg" class="tx-search-msg" role="status" hidden></div>
 		<div class="tx-trail">
 			<span class="tx-trail-label">RUTA:</span>
 			<span id="tx-trail-items"

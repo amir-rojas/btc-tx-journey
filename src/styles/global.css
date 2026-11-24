@@ -115,6 +115,109 @@
 	.tx-view.active {
 		display: block;
 	}
+	/* bottom tab bar (phones only; shown by the <=640px block) */
+	:root {
+		--tx-bbar-h: 0px;
+	}
+	@media (max-width: 640px) {
+		:root {
+			--tx-bbar-h: 60px;
+		}
+	}
+	.tx-bbar {
+		display: none;
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 50;
+		grid-template-columns: repeat(3, 1fr);
+		height: var(--tx-bbar-h);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+		box-sizing: content-box;
+		background: rgba(11, 12, 15, 0.88);
+		backdrop-filter: blur(12px);
+		border-top: 1px solid rgba(242, 241, 237, 0.08);
+	}
+	.tx-bbar-tab {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 5px;
+		border: none;
+		background: transparent;
+		color: #7e8291;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 9.5px;
+		letter-spacing: 0.14em;
+		cursor: pointer;
+		transition: color 0.2s;
+	}
+	.tx-bbar-tab svg {
+		width: 20px;
+		height: 20px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	/* active: accent colour, a short top bar and a small lift on the icon */
+	.tx-bbar-tab::before {
+		content: '';
+		position: absolute;
+		top: -1px;
+		left: 50%;
+		width: 28px;
+		height: 2px;
+		background: currentColor;
+		box-shadow: 0 0 10px currentColor;
+		transform: translateX(-50%) scaleX(0);
+		transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+	}
+	.tx-bbar-tab.active {
+		color: #f7931a;
+		font-weight: 700;
+	}
+	.tx-bbar-tab.active::before {
+		transform: translateX(-50%) scaleX(1);
+	}
+	.tx-bbar-tab.active svg {
+		transform: translateY(-1px);
+	}
+	html[data-net='eth'] .tx-bbar-tab.active {
+		color: #9d7bff;
+	}
+
+	/* reserve the scrollbar's width so short views (e.g. ETH) don't shift the fixed nav */
+	html {
+		scrollbar-gutter: stable;
+	}
+	/* hero eyebrow: centred, and the trailing letter-spacing compensated so wrapped lines
+	   sit on the same axis as the title */
+	.tx-hero-eyebrow {
+		text-align: center;
+		padding-left: 0.3em;
+	}
+	/* tab change: the incoming view fades up (phones only; desktop stays an instant swap) */
+	@keyframes tx-view-in {
+		from {
+			opacity: 0;
+			transform: translateY(14px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
+		.tx-view.tx-view-enter {
+			animation: tx-view-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+		}
+	}
 
 	/* network switch: elements tagged data-net-only="btc|eth" show for that net only */
 	html[data-net='eth'] [data-net-only='btc'],
@@ -398,12 +501,68 @@
 	.tx-search-btn:hover {
 		background: #ffb85c;
 	}
-	.tx-notfound {
+	.tx-search-input::-webkit-search-cancel-button {
+		filter: grayscale(1) brightness(1.6);
+		cursor: pointer;
+	}
+	.tx-search-input:focus {
+		border-color: rgba(247, 147, 26, 0.55);
+	}
+	/* the practice dataset, always visible: tap to open, highlighted while typing */
+	.tx-search-samples {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: -14px;
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 12.5px;
-		color: #ff6b6b;
-		border: 1px solid rgba(255, 107, 107, 0.4);
-		padding: 10px 18px;
+	}
+	.tx-search-samples-label {
+		font-size: 10px;
+		letter-spacing: 0.2em;
+		color: #5b5f6b;
+		margin-right: 4px;
+	}
+	.tx-sample {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 11.5px;
+		color: #8b8f9c;
+		background: rgba(242, 241, 237, 0.03);
+		border: 1px solid rgba(242, 241, 237, 0.12);
+		padding: 6px 10px;
+		cursor: pointer;
+		transition:
+			color 0.15s,
+			border-color 0.15s,
+			background 0.15s,
+			opacity 0.15s;
+	}
+	.tx-sample.match {
+		color: #f7931a;
+		border-color: rgba(247, 147, 26, 0.6);
+		background: rgba(247, 147, 26, 0.08);
+	}
+	.tx-sample.dim {
+		opacity: 0.4;
+	}
+	@media (hover: hover) {
+		.tx-sample:hover {
+			color: #f2f1ed;
+			border-color: rgba(242, 241, 237, 0.3);
+		}
+	}
+	.tx-search-msg {
+		max-width: min(620px, 92vw);
+		box-sizing: border-box;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 12px;
+		line-height: 1.6;
+		color: #e8b04a;
+		border: 1px solid rgba(232, 176, 74, 0.35);
+		background: rgba(232, 176, 74, 0.06);
+		padding: 10px 16px;
+		text-align: center;
 	}
 	.tx-trail {
 		display: flex;
@@ -1117,40 +1276,27 @@
 	}
 
 	@media (max-width: 640px) {
-		/* two-row nav: brand + net toggle, then a scrollable tab strip */
-		.tx-nav {
-			flex-wrap: wrap;
-			row-gap: 6px;
-		}
-		.tx-nav-right {
-			display: contents;
-		}
-		.tx-nav-brand {
-			order: 1;
-		}
-		.tx-net {
-			order: 2;
-			margin-left: auto;
-		}
+		/* one-row top bar (brand + net toggle); the tabs move to the bottom bar */
 		.tx-nav-tabs {
-			order: 3;
-			flex: 0 0 100%;
+			display: none;
 		}
 		.tx-net-btn {
 			padding: 10px 12px;
 			min-height: 40px;
 		}
-		.tx-tab {
-			min-height: 40px;
+		.tx-bbar {
+			display: grid;
+		}
+		body {
+			padding-bottom: calc(var(--tx-bbar-h) + env(safe-area-inset-bottom, 0px));
 		}
 		.tx-exp-hero,
 		.tx-fund-hero,
 		.tx-eth-soon {
-			padding-top: 140px;
+			padding-top: 92px;
 		}
-		/* journey hero has an inline 80px top padding: add the second nav row's height */
-		#view-viaje > div > section:first-child {
-			padding-top: 136px !important;
+		.tx-eth-soon {
+			min-height: calc(100dvh - var(--tx-bbar-h) - env(safe-area-inset-bottom, 0px));
 		}
 		.tx-panel-grid {
 			grid-template-columns: 1fr;
@@ -1199,6 +1345,15 @@
 		.tx-trail-btn {
 			padding: 10px 8px;
 			min-height: 40px;
+		}
+		.tx-sample {
+			min-height: 40px;
+			font-size: 12px;
+		}
+		.tx-search-samples-label {
+			flex-basis: 100%;
+			text-align: center;
+			margin-right: 0;
 		}
 		.tx-follow-btn {
 			min-height: 40px;
@@ -1319,13 +1474,13 @@
 
 	/* journey overlays on phones and portrait tablets (the sim uses its stacked layout there) */
 	@media (max-width: 640px), (max-width: 899px) and (orientation: portrait) {
-		/* journey HUD: the fixed nav (112px) covered it, so the TX id / status / sound toggle
-		   sit in a bottom row instead, clear of home-indicator bars */
+		/* journey HUD: sits in a bottom row (above the tab bar on phones), clear of
+		   home-indicator bars */
 		.tx-hud {
 			top: auto;
 			right: 12px;
 			left: 12px;
-			bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+			bottom: calc(10px + var(--tx-bbar-h) + env(safe-area-inset-bottom, 0px));
 			justify-content: center;
 			gap: 8px;
 		}
@@ -1335,7 +1490,7 @@
 		}
 		/* caption: lower, tighter, with real padding instead of text glued to the box edge */
 		.tx-caption-wrap {
-			bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+			bottom: calc(60px + var(--tx-bbar-h) + env(safe-area-inset-bottom, 0px));
 		}
 		.tx-caption-box {
 			height: 132px !important;

@@ -10,13 +10,30 @@ import { TXS, DEFAULT_TX_ID } from '../data/txExplorerData';
 import { tick } from './txSound';
 import { escapeHtml, renderPanel } from './txExplorerRender';
 
+/** "4b3f…a2d1", "4B3F...A2D1" and "4b3fa2d1" all normalise to "4b3fa2d1". */
+const normTxid = (s: string) => s.toLowerCase().replace(/[\s.…]/g, '');
+
+/**
+ * Practice TXs matching what was typed: a prefix of the shortened id, its
+ * "prefix…suffix" form, or a full-length hash that starts and ends like it.
+ */
+function findTxs(raw: string): string[] {
+	const q = normTxid(raw);
+	if (!q) return [];
+	return Object.keys(TXS).filter((id) => {
+		const [head, tail = ''] = id.toLowerCase().split('…');
+		return (head + tail).startsWith(q) || (q.length > head.length + tail.length && q.startsWith(head) && q.endsWith(tail));
+	});
+}
+
 export function initExplorer(): void {
 	const panel = document.getElementById('tx-panel');
 	const trailWrap = document.getElementById('tx-trail-items');
 	const input = document.getElementById('tx-search-input') as HTMLInputElement | null;
-	const searchBtn = document.getElementById('tx-search-btn');
-	const notFoundEl = document.getElementById('tx-notfound');
-	if (!panel || !trailWrap || !input || !searchBtn || !notFoundEl) return;
+	const form = document.getElementById('tx-search') as HTMLFormElement | null;
+	const msgEl = document.getElementById('tx-search-msg');
+	const samples = [...document.querySelectorAll<HTMLButtonElement>('[data-sample]')];
+	if (!panel || !trailWrap || !input || !form || !msgEl) return;
 
 	let cur = DEFAULT_TX_ID;
 	let trail = [DEFAULT_TX_ID];
@@ -44,7 +61,7 @@ export function initExplorer(): void {
 		cur = id;
 		sel = null;
 		trail = trail.includes(id) ? trail.slice(0, trail.indexOf(id) + 1) : [...trail, id];
-		notFoundEl!.hidden = true;
+		msgEl!.hidden = true;
 		tick(760, 0.07, 0.035);
 		renderAll();
 	}
@@ -65,25 +82,55 @@ export function initExplorer(): void {
 		if (pickEl) pick(pickEl.dataset.pick as string);
 	});
 
-	const buscar = () => {
-		const q = input.value.trim().toLowerCase();
-		const hit = Object.keys(TXS).find((k) => q.length >= 3 && k.toLowerCase().startsWith(q.slice(0, 4)));
-		if (hit) {
-			cur = hit;
-			trail = [hit];
-			input.value = '';
-			notFoundEl.hidden = true;
-			tick(760, 0.07, 0.035);
-			renderAll();
-		} else {
-			notFoundEl.hidden = false;
-		}
+	const showMsg = (text: string) => {
+		msgEl.textContent = text;
+		msgEl.hidden = false;
 	};
 
-	input.addEventListener('input', () => {
-		notFoundEl.hidden = true;
+	/** Jump to a TX from the search box (starts a fresh trail) and bring the panel into view. */
+	const openTx = (id: string) => {
+		cur = id;
+		sel = null;
+		trail = [id];
+		input.value = '';
+		msgEl.hidden = true;
+		highlight([]);
+		tick(760, 0.07, 0.035);
+		renderAll();
+		panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	};
+
+	const highlight = (ids: string[]) => {
+		const q = input.value.trim();
+		samples.forEach((b) => {
+			b.classList.toggle('match', ids.includes(b.dataset.sample as string));
+			b.classList.toggle('dim', q !== '' && !ids.includes(b.dataset.sample as string));
+		});
+	};
+
+	const buscar = () => {
+		const raw = input.value.trim();
+		const q = normTxid(raw);
+		if (!q) return showMsg('Escribe un TXID (o sus primeros caracteres) o elige una de las TXs de práctica.');
+		const hits = findTxs(raw);
+		if (hits.length === 1) return openTx(hits[0]);
+		if (hits.length > 1) return showMsg(`Varias TXs empiezan por “${raw}”: elige una de las resaltadas.`);
+		if (!/^[0-9a-f]+$/.test(q)) return showMsg('Un TXID solo tiene números y letras de la a a la f.');
+		if (q.length === 64)
+			return showMsg('Ese parece un TXID real, pero este rastreador es de práctica: solo contiene las 3 TXs de arriba.');
+		showMsg(`Ninguna TX de práctica empieza por “${raw}”. Prueba con una de las TXs de práctica.`);
+	};
+
+	form.addEventListener('submit', (e) => {
+		e.preventDefault();
+		buscar();
 	});
-	searchBtn.addEventListener('click', buscar);
+	// live feedback: highlight the sample TXs the current text matches
+	input.addEventListener('input', () => {
+		msgEl.hidden = true;
+		highlight(input.value.trim() ? findTxs(input.value) : []);
+	});
+	samples.forEach((b) => b.addEventListener('click', () => openTx(b.dataset.sample as string)));
 
 	renderAll();
 }

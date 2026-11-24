@@ -56,8 +56,17 @@ export function initChrome(): void {
 	let current: View = 'viaje';
 
 	const setView = (v: View) => {
+		const changed = v !== current;
 		current = v;
 		VIEWS.forEach((key) => viewEls[key]?.classList.toggle('active', key === v));
+		// replay the entry animation on the incoming view (CSS decides where it runs)
+		const el = viewEls[v];
+		if (changed && el) {
+			el.classList.remove('tx-view-enter');
+			void el.offsetWidth; // restart the animation
+			el.classList.add('tx-view-enter');
+			el.addEventListener('animationend', () => el.classList.remove('tx-view-enter'), { once: true });
+		}
 		tabs.forEach((b) => b.classList.toggle('active', b.dataset.tab === v));
 		// the tab strip scrolls sideways on narrow phones: keep the active tab in view
 		const activeTab = tabs.find((b) => b.dataset.tab === v);
