@@ -7,8 +7,8 @@
  * in sync with a single source of truth.
  */
 
-export type TxInput = { addr: string; val: string };
-export type TxOutput = { addr: string; val: string; tag: string; next: string | null };
+export type TxInput = { addr: string; val: string; why: string };
+export type TxOutput = { addr: string; val: string; tag: string; next: string | null; why: string };
 export type TxRecord = {
 	id: string;
 	block: string;
@@ -25,10 +25,26 @@ export const TXS: Record<string, TxRecord> = {
 		block: '840,000',
 		conf: '6+',
 		fee: '0.00020 BTC · 12 sat/vB',
-		inputs: [{ addr: '1A1zP1…5QGefi2 (Alice)', val: '0.01950 BTC' }],
+		inputs: [{
+					addr: '1A1zP1…5QGefi2 (Alice)',
+					val: '0.01950 BTC',
+					why: 'Un único UTXO. Alice no tenía un "saldo" de 0.019: tenía este billete concreto, y para pagar 0.005 hay que gastarlo entero.',
+				}],
 		outputs: [
-			{ addr: 'bc1qxy…w0en3 (Bob)', val: '0.00500 BTC', tag: 'GASTADO EN 9e12…77af', next: '9e12…77af' },
-			{ addr: '1A1zP1…5QGefi2', val: '0.01430 BTC', tag: 'CAMBIO · SIN GASTAR', next: null },
+			{
+					addr: 'bc1qxy…w0en3 (Bob)',
+					val: '0.00500 BTC',
+					tag: 'GASTADO EN 9e12…77af',
+					next: '9e12…77af',
+					why: 'El pago real. Dirección SegWit que Alice nunca había usado: sin historial previo que la vincule a nada. Ya fue gastada — por aquí continúa el rastro.',
+				},
+			{
+					addr: '1A1zP1…5QGefi2',
+					val: '0.01430 BTC',
+					tag: 'CAMBIO · SIN GASTAR',
+					next: null,
+					why: 'Vuelve a la MISMA dirección del input: es el cambio. Monto no redondo = resto aritmético, no un pago. Identificar el cambio es lo que te dice quién controla la TX.',
+				},
 		],
 		nota: 'El segundo output vuelve al emisor: es el "cambio". Detectar el cambio te dice quién controla la transacción.',
 	},
@@ -38,12 +54,32 @@ export const TXS: Record<string, TxRecord> = {
 		conf: '6+',
 		fee: '0.00034 BTC · 18 sat/vB',
 		inputs: [
-			{ addr: 'bc1qxy…w0en3 (Bob)', val: '0.00500 BTC' },
-			{ addr: 'bc1q8k…r4m2 (Bob)', val: '0.01200 BTC' },
+			{
+					addr: 'bc1qxy…w0en3 (Bob)',
+					val: '0.00500 BTC',
+					why: 'Exactamente el output que Alice le pagó a Bob. Así se encadenan los saltos: el output gastado de una TX es el input de la siguiente.',
+				},
+			{
+					addr: 'bc1q8k…r4m2 (Bob)',
+					val: '0.01200 BTC',
+					why: 'Un segundo UTXO, de otra dirección. Firmar esta TX exige las claves privadas de AMBAS → co-gasto: las dos direcciones son de la misma persona. Confianza alta.',
+				},
 		],
 		outputs: [
-			{ addr: '3FZbgi…kdT9 (Exchange)', val: '0.01620 BTC', tag: 'GASTADO EN c0de…12ef', next: 'c0de…12ef' },
-			{ addr: 'bc1q7d…p9x1', val: '0.00046 BTC', tag: 'CAMBIO · SIN GASTAR', next: null },
+			{
+					addr: '3FZbgi…kdT9 (Exchange)',
+					val: '0.01620 BTC',
+					tag: 'GASTADO EN c0de…12ef',
+					next: 'c0de…12ef',
+					why: 'Prefijo 3… y miles de TXs recibidas: patrón inconfundible de dirección de depósito de exchange. Aquí el rastro se cruza con una identidad verificada por KYC.',
+				},
+			{
+					addr: 'bc1q7d…p9x1',
+					val: '0.00046 BTC',
+					tag: 'CAMBIO · SIN GASTAR',
+					next: null,
+					why: 'Cambio residual, casi polvo. Si el fee sube, gastar este UTXO costaría más de lo que vale: se queda muerto en la cadena.',
+				},
 		],
 		nota: 'Bob combinó dos UTXOs propios en un solo pago: eso vincula ambas direcciones a la misma entidad (heurística de co-gasto).',
 	},
@@ -53,10 +89,24 @@ export const TXS: Record<string, TxRecord> = {
 		conf: '6+',
 		fee: '0.00089 BTC · 22 sat/vB',
 		inputs: [
-			{ addr: '3FZbgi…kdT9 (Exchange)', val: '0.01620 BTC' },
-			{ addr: '3FZbgi…kdT9 (+214 inputs)', val: '1.18920 BTC' },
+			{
+					addr: '3FZbgi…kdT9 (Exchange)',
+					val: '0.01620 BTC',
+					why: 'El depósito de Bob, ya dentro del exchange.',
+				},
+			{
+					addr: '3FZbgi…kdT9 (+214 inputs)',
+					val: '1.18920 BTC',
+					why: '214 depósitos de otros usuarios barridos en la misma TX. Aquí el dinero de Bob se mezcla con el de cientos de desconocidos.',
+				},
 		],
-		outputs: [{ addr: 'bc1qcold…v8s3 (Cold wallet)', val: '1.20451 BTC', tag: 'SIN GASTAR · FIN DEL RASTRO', next: null }],
+		outputs: [{
+					addr: 'bc1qcold…v8s3 (Cold wallet)',
+					val: '1.20451 BTC',
+					tag: 'SIN GASTAR · FIN DEL RASTRO',
+					next: null,
+					why: 'Un único output a la cold wallet de reservas. On-chain ya no puedes separar los fondos de Bob del resto: el rastro público termina aquí.',
+				}],
 		nota: 'Consolidación típica de exchange: cientos de depósitos barridos a una cold wallet. Aquí el rastro on-chain termina — el siguiente paso es pedir registros KYC al exchange.',
 	},
 };

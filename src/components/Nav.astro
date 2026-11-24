@@ -1,8 +1,23 @@
+---
+// Tab visibility convention: any element with `data-net-only="btc"` or
+// `data-net-only="eth"` is hidden by CSS when <html data-net> is the other
+// network. To add a net-specific view (e.g. CLUSTERING for btc, MEV for eth):
+//   1. add its id to VIEWS / VIEW_NETS in scripts/txChrome.ts,
+//   2. add a `<button class="tx-tab" data-tab="..." data-net-only="...">` below,
+//   3. add its `<div id="view-..." class="tx-view" data-net-only="...">`.
+---
+
 <nav class="tx-nav">
 	<div class="tx-nav-brand"><span class="tx-nav-dot"></span>TX·TERMINAL</div>
-	<div class="tx-nav-tabs">
-		<button class="tx-tab active" data-tab="viaje">EL VIAJE</button>
-		<button class="tx-tab" data-tab="explorador">RASTREAR TX</button>
-		<button class="tx-tab" data-tab="fund">FUNDAMENTOS</button>
+	<div class="tx-nav-right">
+		<div class="tx-net" role="group" aria-label="Red">
+			<button class="tx-net-btn active" data-net-btn="btc" aria-pressed="true">₿&nbsp; BTC</button>
+			<button class="tx-net-btn" data-net-btn="eth" aria-pressed="false">Ξ&nbsp; ETH</button>
+		</div>
+		<div class="tx-nav-tabs">
+			<button class="tx-tab active" data-tab="viaje">EL VIAJE</button>
+			<button class="tx-tab" data-tab="explorador">RASTREAR TX</button>
+			<button class="tx-tab" data-tab="fund">FUNDAMENTOS</button>
+		</div>
 	</div>
 </nav>

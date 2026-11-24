@@ -19,7 +19,8 @@ import Glosario from './Glosario.astro';
 				Sigue una transacción desde la firma hasta sus confirmaciones en la blockchain.
 			</p>
 			<div
-				style="margin-top:16px;position:relative;border:1px solid rgba(242,241,237,.14);background:linear-gradient(170deg,#171a20,#111318);padding:24px 32px;display:flex;flex-direction:column;gap:10px;min-width:280px;font-family:'JetBrains Mono',monospace;box-shadow:0 24px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);"
+				class="tx-hero-card"
+				style="margin-top:16px;position:relative;border:1px solid rgba(242,241,237,.14);background:linear-gradient(170deg,#171a20,#111318);padding:24px 32px;display:flex;flex-direction:column;gap:10px;font-family:'JetBrains Mono',monospace;box-shadow:0 24px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);"
 			>
 				<div style="position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:1.5px solid #f7931a;border-left:1.5px solid #f7931a;">
 				</div>
@@ -27,7 +28,7 @@ import Glosario from './Glosario.astro';
 				</div>
 				<div style="display:flex;justify-content:space-between;align-items:center;">
 					<span style="font-size:10.5px;letter-spacing:.26em;color:#8b8f9c;">WALLET</span>
-					<span style="font-size:9.5px;letter-spacing:.18em;color:#5b8cff;border:1px solid rgba(91,140,255,.35);padding:3px 8px;"
+					<span class="tx-micro" style="letter-spacing:.18em;color:#5b8cff;border:1px solid rgba(91,140,255,.35);padding:3px 8px;"
 						>LISTA PARA FIRMAR</span
 					>
 				</div>
@@ -45,7 +46,7 @@ import Glosario from './Glosario.astro';
 			</div>
 			<div style="display:flex;gap:28px;flex-wrap:wrap;justify-content:center;font-family:'JetBrains Mono',monospace;">
 				<div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
-					<span style="font-size:9.5px;letter-spacing:.24em;color:#5b5f6b;">MONTO</span>
+					<span class="tx-micro" style="letter-spacing:.24em;color:#5b5f6b;">MONTO</span>
 					<div style="display:flex;gap:6px;">
 						<button class="tx-pick" data-monto="0.001">0.001</button>
 						<button class="tx-pick active" data-monto="0.005">0.005</button>
@@ -53,7 +54,7 @@ import Glosario from './Glosario.astro';
 					</div>
 				</div>
 				<div style="display:flex;flex-direction:column;gap:8px;align-items:center;">
-					<span style="font-size:9.5px;letter-spacing:.24em;color:#5b5f6b;">PRIORIDAD (FEE)</span>
+					<span class="tx-micro" style="letter-spacing:.24em;color:#5b5f6b;">PRIORIDAD (FEE)</span>
 					<div style="display:flex;gap:6px;">
 						<button class="tx-pick" data-fee="6">BAJA</button>
 						<button class="tx-pick active" data-fee="12">MEDIA</button>
@@ -83,7 +84,7 @@ import Glosario from './Glosario.astro';
 				</div>
 				<div data-prog style="position:absolute;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,#f7931a,#ffb85c);box-shadow:0 0 10px rgba(247,147,26,.8);">
 				</div>
-				<div data-hud style="position:absolute;top:18px;right:24px;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .5s;">
+				<div data-hud class="tx-hud" style="position:absolute;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;opacity:0;transition:opacity .5s;">
 					<span style="font-size:11px;letter-spacing:.12em;color:#8b8f9c;">TX <span style="color:#f2f1ed;">4b3f…a2d1</span></span>
 					<span data-status style="font-size:10px;letter-spacing:.2em;color:#5b8cff;border:1px solid rgba(91,140,255,.4);padding:5px 10px;background:rgba(11,12,15,.6);backdrop-filter:blur(6px);"
 						>FIRMANDO</span
@@ -116,34 +117,34 @@ import Glosario from './Glosario.astro';
 						<span style="font-size:10px;">06</span><span>CONFIRMACIONES</span>
 					</button>
 				</div>
-				<div style="position:absolute;left:0;right:0;bottom:56px;display:flex;justify-content:center;pointer-events:none;">
+				<div class="tx-caption-wrap" style="position:absolute;left:0;right:0;display:flex;justify-content:center;pointer-events:none;">
 					<div
 						class="tx-caption-box"
 						style="position:relative;width:min(560px,86vw);height:118px;background:rgba(11,12,15,.55);backdrop-filter:blur(8px);border:1px solid rgba(242,241,237,.06);border-radius:6px;padding:8px 0;"
 					>
 						<div data-stage="0" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 							<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 01 / 06 — FIRMA</div>
-							<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">La wallet firma digitalmente la transacción para demostrar que puede gastar esos fondos.</p>
+							<p style="margin:0;color:#c9c8c2;line-height:1.5;">La wallet firma digitalmente la transacción para demostrar que puede gastar esos fondos.</p>
 						</div>
 						<div data-stage="1" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 							<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 02 / 06 — MEMPOOL</div>
-							<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">La transacción se transmite a la red y queda temporalmente en el mempool esperando ser incluida en un bloque.</p>
+							<p style="margin:0;color:#c9c8c2;line-height:1.5;">La transacción se transmite a la red y queda temporalmente en el mempool esperando ser incluida en un bloque.</p>
 						</div>
 						<div data-stage="2" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 							<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 03 / 06 — SELECCIÓN</div>
-							<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">Un minero selecciona transacciones del mempool y las prioriza según sus comisiones.</p>
+							<p style="margin:0;color:#c9c8c2;line-height:1.5;">Un minero selecciona transacciones del mempool y las prioriza según sus comisiones.</p>
 						</div>
 						<div data-stage="3" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 							<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 04 / 06 — PROOF OF WORK</div>
-							<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">Millones de intentos por segundo hasta encontrar un hash válido para el bloque.</p>
+							<p style="margin:0;color:#c9c8c2;line-height:1.5;">Millones de intentos por segundo hasta encontrar un hash válido para el bloque.</p>
 						</div>
 						<div data-stage="4" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 							<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 05 / 06 — BLOQUE AGREGADO</div>
-							<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">El bloque válido se propaga por la red y todos los nodos convergen en la misma cadena.</p>
+							<p style="margin:0;color:#c9c8c2;line-height:1.5;">El bloque válido se propaga por la red y todos los nodos convergen en la misma cadena.</p>
 						</div>
 						<div data-stage="5" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;">
 							<div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.28em;color:#f7931a;">STEP 06 / 06 — CONFIRMACIONES</div>
-							<p style="margin:0;color:#c9c8c2;font-size:16px;line-height:1.5;">Cada bloque adicional entierra más profundamente tu transacción: más confirmaciones, más irreversible.</p>
+							<p style="margin:0;color:#c9c8c2;line-height:1.5;">Cada bloque adicional entierra más profundamente tu transacción: más confirmaciones, más irreversible.</p>
 						</div>
 					</div>
 				</div>

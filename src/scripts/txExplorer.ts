@@ -1,16 +1,14 @@
 /**
- * Block explorer tab ("RASTREAR TX"): search a TXID, follow outputs to the
- * next transaction, breadcrumb trail. Ported from the DCLogic component's
- * `state.{cur,trail,query,notFound}` + `buscar`/`_followTo` methods into a
- * small render-on-change loop, since there's no React runtime here.
+ * Block explorer tab ("RASTREAR TX"): search a TXID, inspect inputs/outputs,
+ * follow outputs to the next transaction, breadcrumb trail. Ported from the
+ * DCLogic component's `state.{cur,trail,query,notFound,insp,sel}` +
+ * `buscar`/`_pick`/`_followTo` methods into a small render-on-change loop,
+ * since there's no React runtime here. Markup comes from `txExplorerRender.ts`.
  */
 
-import { TXS, DEFAULT_TX_ID, type TxRecord } from '../data/txExplorerData';
+import { TXS, DEFAULT_TX_ID } from '../data/txExplorerData';
 import { tick } from './txSound';
-
-function escapeHtml(s: string): string {
-	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+import { escapeHtml, renderPanel } from './txExplorerRender';
 
 export function initExplorer(): void {
 	const panel = document.getElementById('tx-panel');
@@ -22,56 +20,8 @@ export function initExplorer(): void {
 
 	let cur = DEFAULT_TX_ID;
 	let trail = [DEFAULT_TX_ID];
-
-	const renderPanel = (tx: TxRecord) => {
-		panel.innerHTML = `
-			<div class="tx-panel-head">
-				<div class="tx-panel-id">
-					<span class="tx-label">TXID</span>
-					<span class="tx-id-val">${escapeHtml(tx.id)}</span>
-				</div>
-				<div class="tx-panel-meta">
-					<div class="tx-meta-item"><span class="tx-label">BLOQUE</span><span class="tx-meta-val">${escapeHtml(tx.block)}</span></div>
-					<div class="tx-meta-item"><span class="tx-label">CONFIRMACIONES</span><span class="tx-meta-val tx-conf">${escapeHtml(tx.conf)}</span></div>
-					<div class="tx-meta-item"><span class="tx-label">FEE</span><span class="tx-meta-val">${escapeHtml(tx.fee)}</span></div>
-				</div>
-			</div>
-			<div class="tx-panel-grid">
-				<div class="tx-col">
-					<span class="tx-col-label tx-col-in">INPUTS · DE DÓNDE VIENE</span>
-					${tx.inputs
-						.map(
-							(inp) =>
-								`<div class="tx-row tx-row-in"><span class="tx-row-addr">${escapeHtml(inp.addr)}</span><span class="tx-row-val">${escapeHtml(inp.val)}</span></div>`
-						)
-						.join('')}
-				</div>
-				<div class="tx-col-arrow">→</div>
-				<div class="tx-col tx-col-right">
-					<span class="tx-col-label tx-col-out">OUTPUTS · A DÓNDE VA</span>
-					${tx.outputs
-						.map(
-							(out) => `
-						<div class="tx-row tx-row-out${out.next ? ' tx-row-next' : ''}">
-							<div class="tx-row-left">
-								<span class="tx-row-addr">${escapeHtml(out.addr)}</span>
-								<span class="tx-row-tag${out.next ? ' tx-row-tag-next' : ''}">${escapeHtml(out.tag)}</span>
-							</div>
-							<div class="tx-row-right">
-								<span class="tx-row-val">${escapeHtml(out.val)}</span>
-								${out.next ? `<button class="tx-follow-btn" data-follow="${escapeHtml(out.next)}">SEGUIR →</button>` : ''}
-							</div>
-						</div>`
-						)
-						.join('')}
-				</div>
-			</div>
-			<div class="tx-note"><span class="tx-note-label">ANALISTA:</span> ${escapeHtml(tx.nota)}</div>
-		`;
-		panel.querySelectorAll<HTMLButtonElement>('[data-follow]').forEach((btn) => {
-			btn.addEventListener('click', () => followTo(btn.dataset.follow as string));
-		});
-	};
+	const insp = new Set<string>();
+	let sel: string | null = null;
 
 	const renderTrail = () => {
 		trailWrap.innerHTML = trail
@@ -86,17 +36,34 @@ export function initExplorer(): void {
 	};
 
 	const renderAll = () => {
-		renderPanel(TXS[cur]);
+		panel.innerHTML = renderPanel(TXS[cur], insp, sel);
 		renderTrail();
 	};
 
 	function followTo(id: string) {
 		cur = id;
+		sel = null;
 		trail = trail.includes(id) ? trail.slice(0, trail.indexOf(id) + 1) : [...trail, id];
 		notFoundEl!.hidden = true;
 		tick(760, 0.07, 0.035);
 		renderAll();
 	}
+
+	function pick(k: string) {
+		insp.add(k);
+		sel = sel === k ? null : k;
+		tick(720, 0.05, 0.03);
+		renderAll();
+	}
+
+	// One delegated listener: the panel's inner markup is rebuilt on every change.
+	panel.addEventListener('click', (e) => {
+		const target = e.target as HTMLElement;
+		const follow = target.closest<HTMLElement>('[data-follow]');
+		if (follow) return followTo(follow.dataset.follow as string);
+		const pickEl = target.closest<HTMLElement>('[data-pick]');
+		if (pickEl) pick(pickEl.dataset.pick as string);
+	});
 
 	const buscar = () => {
 		const q = input.value.trim().toLowerCase();

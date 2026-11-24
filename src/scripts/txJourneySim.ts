@@ -120,7 +120,8 @@ export function init(): void {
 		const t = (tms / 1000) * VELOCITY;
 		const W = canvas.width / dpr;
 		const H = canvas.height / dpr;
-		const MOB = W < 700;
+		// portrait tablets (<900px) also need the stacked layout: the side-by-side one clips its labels there
+		const MOB = W < 700 || (W < 900 && H > W);
 		const range = sim.clientHeight - window.innerHeight;
 		const P = clamp((window.scrollY - sim.offsetTop) / range, 0, 1);
 		const sTarget = P * 6;
